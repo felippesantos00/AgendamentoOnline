@@ -1,9 +1,7 @@
 from time import sleep
 import PySimpleGUI as sg
-import csv
 import Banco as banco
 
-#Funções 
 def buscarAgendamento(): 
     if event == 'meusAgendamentos':
         window.FindElement('_output_').Update('')
@@ -11,11 +9,6 @@ def buscarAgendamento():
         senha = str(values['senha'])
         confirmSenha = str(values['senha'])
         banco.Banco().selectTable(3,nomeCompleto, senha, confirmSenha)
-        # with open('data.csv', 'r',encoding='utf-8') as csvfile:
-        #     arquivo = csv.DictReader(csvfile, delimiter=';')
-        #     for row in arquivo:
-        #         if row['nome'] == nomeCompleto:
-        #             return print(row)
 
 def agendar():
     if event == 'agendar': 
@@ -28,21 +21,6 @@ def agendar():
         window.FindElement('_output_').Update('')
         idUser = banco.Banco().selectTable(3,nomeCompleto, senha, confirmSenha)
         banco.Banco().insertTable(0,nomeCompleto,senha,confirmSenha,idUser,data,tema,hora)
-        # with open('data.csv', 'a', encoding='utf-8',newline='') as csvfile:
-        #     data = str(values[0])
-        #     tema = str(values[1])
-        #     hora = str(values[2])
-        #     valores = [nomeCompleto,data,tema,hora]
-        #     valores1 = ';'.join(valores)
-        #     if len(valores1) > 31:
-        #         print('---------------------- Sucesso ----------------------')
-        #         print(valores1)
-        #         print('--------- Agendamento realizado com sucesso ---------')
-        #         csvfile.write(valores1 + '\n')
-        #     else:
-        #         print('------- Não foi possível realizar a ação ------------')
-        #         print('Vazio')
-        #         print('------------------ Tente novamente ------------------')
         
 def todosAgendamento():
     if event == 'todosAgendamentos':
@@ -57,12 +35,6 @@ def todosAgendamento():
             progressBar.UpdateBar(a+1, 10000)
         progressBar.UpdateBar(0, 10000)
         banco.Banco().selectTable(1,nomeCompleto,senha,confirmSenha)
-        # with open('data.csv', 'r', encoding='utf-8') as csvfile:
-        #     arquivo = csv.DictReader(csvfile, delimiter=';')
-        #     for row in arquivo:
-        #         print('_________________________________________________________\n')
-        #         print(''.join(row['nome']+': '+ row['data']+': '+ row['tema']+': '+ row['hora']))
-        # csvfile.close()
         
 sg.theme('SystemDefault1')
 temas = ['Brainstorm', 'Briefing', 'Apresentação', 'Encontro recorrente']
@@ -102,9 +74,9 @@ while True:
     window, event,values = sg.read_all_windows()        
     if event == sg.WIN_CLOSED or event == 'Cancelar' or event == 'Exit':
         window.close()
-        if window == window2:       # if closing win 2, mark as closed
+        if window == window2:
             window2 = None
-        elif window == window1:     # if closing win 1, exit program
+        elif window == window1:
             break
     elif event == 'Calendario':
         date = sg.popup_get_date()
