@@ -1,6 +1,7 @@
 from time import sleep
 import PySimpleGUI as sg
 import Banco as banco
+from random import randint
 
 def buscarAgendamento(): 
     if event == 'meusAgendamentos':
@@ -88,13 +89,14 @@ while True:
     buscarAgendamento()
     if event == 'cadastrar' and not window2:
         window2 = win_2()
-    elif event == 'Cadastrar':
+    if event == 'Cadastrar':
+        idUser = randint(0, 1000)
         nomeNovo = str(values['nomeNovo'])
         senhaNova = str(values['senhaNova'])
         confirmSenhaNova = str(values['confirmSenhaNova'])
-        banco.Banco().insertTable(0,nomeNovo,senhaNova,confirmSenhaNova,'','','','')
-        window2.close()
-            
+        banco.Banco().insertTable(1,nomeNovo,senhaNova,confirmSenhaNova,idUser,'','','')
+        sleep(2)
+        window2 = window2.close()
     elif event == 'banco':
         window.FindElement('_output_').Update('')
         nomeCompleto = str(values['NomeCompleto'])
