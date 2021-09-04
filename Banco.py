@@ -3,7 +3,6 @@ import sqlite3
 class Banco():
     def __init__(self):
         self.conexao = sqlite3.connect('banco.db')
-    def __call__(self):
         self.createTable()
         print("Iniciando....")
 
@@ -35,22 +34,25 @@ class Banco():
     
     def insertTable(self, event,nomeCompleto, senha, confirmSenha, idUser, data, tema, hora):
         c = self.conexao.cursor()
-        query=[
+        querys =[
             "INSERT INTO reunioes (nome, data, tema, hora,idusuario_idusuario) VALUES ('%s', '%s', '%s','%s', %d);"%(nomeCompleto, data,tema,hora,idUser),
-            "INSERT INTO idusuario (nome, senha, confirmSenha) VALUES ('%s','%s','%s')"% (nomeCompleto,senha,confirmSenha)
+            "INSERT INTO idusuario (ididusuario, nome, senha, confirmSenha) VALUES ('%d','%s','%s','%s');"% (idUser, nomeCompleto,senha,confirmSenha)
             ]
-        if event == 1:  #adicionar usuario
-            if senha == confirmSenha:
-                print("Novo usuario: ",nomeCompleto)
-                print("Senha: ",senha)
-                print("Cadastrado com sucesso")
-            else:
-                return print("senha e confirmação de senha invalida")
-        if event == 0: #
-            c.execute(query[event])
-            print("agendamento concluido")
-        self.conexao.commit()
-        c.close()
+        for query in querys:
+            if event == 1:  #adicionar usuario
+                if senha == confirmSenha:
+                    print("Novo usuario: ",nomeCompleto)
+                    print("Senha: ",senha)
+                    print("Cadastrado com sucesso")
+                    self.conexao.commit()
+                    c.close()
+                else:
+                    return print("senha e confirmação de senha invalida")
+            elif event == 0: #
+                c.execute(query[event])
+                print("agendamento concluido")
+                self.conexao.commit()
+                c.close()
 
     def selectTable(self, event, nomeCompleto, senha, confirmSenha):
         querys = [
@@ -82,8 +84,8 @@ class Banco():
                     print("id usuario: ",linha[5])
                     print("_______________________________________")
                     print()
+                    return linha[5]
                 print("executado com sucesso")
-                return linha[5]
         else:
             return print('Senha incorreta')
         self.conexao.commit()
