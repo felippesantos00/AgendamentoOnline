@@ -1,10 +1,8 @@
 import sqlite3
-
+from time import sleep
 class Banco():
     def __init__(self):
         self.conexao = sqlite3.connect('banco.db')
-        self.createTable()
-        print("Iniciando....")
 
     def createTable(self):
         c = self.conexao.cursor()
@@ -24,49 +22,52 @@ class Banco():
         );"
         ]
         try:
+            print("Iniciando....")
+            sleep(1)
+            print("Banco Estruturado")
             for query in queryConstrutor:
                 c.execute(query)
-                print("Executando query:" + query)
                 self.conexao.commit()
         except:
-            print("As tabelas ja foram criadas anteriormente")
+            print()
         c.close()
     
     def insertTable(self, event,nomeCompleto, senha, confirmSenha, idUser, data, tema, hora):
-        c = self.conexao.cursor()
         querys =[
             "INSERT INTO reunioes (nome, data, tema, hora,idusuario_idusuario) VALUES ('%s', '%s', '%s','%s', %d);"%(nomeCompleto, data,tema,hora,idUser),
             "INSERT INTO idusuario (ididusuario, nome, senha, confirmSenha) VALUES ('%d','%s','%s','%s');"% (idUser, nomeCompleto,senha,confirmSenha)
             ]
         for query in querys:
-            if event == 1:  #adicionar usuario
-                if senha == confirmSenha:
+            c = self.conexao.cursor()
+            try:
+                c.execute(query)
+                if event == 1 and senha == confirmSenha:
                     print("Novo usuario: ",nomeCompleto)
                     print("Senha: ",senha)
-                    print("Cadastrado com sucesso")
+                    print("Cadastrado com sucesso")     
                     self.conexao.commit()
-                    c.close()
-                else:
-                    return print("senha e confirmação de senha invalida")
-            elif event == 0: #
-                c.execute(query[event])
-                print("agendamento concluido")
+                    c.close()           
+            except:
                 self.conexao.commit()
                 c.close()
+                print("Usuario: %s foi confirmado"% (nomeCompleto))
+                print("Agendamento concluido")
+                print("_______________________________________")
+                print()
+            
 
-    def selectTable(self, event, nomeCompleto, senha, confirmSenha):
+    def selectTable(self, nomeCompleto, senha, confirmSenha):
         querys = [
-            ("SELECT * FROM loginUsuarios"),
             ("SELECT * FROM reunioes"),
             ("SELECT * FROM idusuario WHERE nome='%s' and senha='%s' and confirmSenha='%s'" % (nomeCompleto,senha,confirmSenha)),
             ("SELECT * FROM reunioes LEFT JOIN idusuario ON reunioes.nome = idusuario.nome WHERE reunioes.nome = '%s' and idusuario.senha = '%s' and idusuario.confirmSenha = '%s' "% (nomeCompleto,senha,confirmSenha))
             ]
-        if senha == confirmSenha:
+        for query in querys:
             c = self.conexao.cursor()
-            c.execute(querys[event])
+            c.execute(query)
             linhas = c.fetchall()
-            if event == 1:
-                for linha in linhas: # Consultar todos as reunioes
+            for linha in linhas:
+                try:
                     print("Nome: ", linha[1])
                     print("Data:", linha[2])
                     print("Tema da reunião:", linha[3])
@@ -74,19 +75,14 @@ class Banco():
                     print("id usuario: ",linha[5])
                     print("_______________________________________")
                     print()
-                print("executado com sucesso")
-            if event == 3 or event == 2: # Consultar minhas as reunioes ou meu usuario
-                for linha in linhas:
-                    print("Nome: ", linha[1])
-                    print("Data:", linha[2])
-                    print("Tema da reunião:", linha[3])
-                    print("Horário da reunião:", linha[4])
-                    print("id usuario: ",linha[5])
+                    print("executado com sucesso")
+                except:
+                    print("Id: ", linha[0])
+                    print("Nome:", linha[1])
+                    print("Senha:", linha[2])
                     print("_______________________________________")
                     print()
-                    return linha[5]
-                print("executado com sucesso")
-        else:
-            return print('Senha incorreta')
-        self.conexao.commit()
-        c.close()
+                    print("executado com sucesso")
+                    return linha[0]
+            self.conexao.commit()
+            c.close()
