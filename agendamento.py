@@ -9,7 +9,7 @@ def buscarAgendamento():
         nomeCompleto = str(values['NomeCompleto'])
         senha = str(values['senha'])
         confirmSenha = str(values['senha'])
-        banco.Banco().selectTable(3,nomeCompleto, senha, confirmSenha)
+        banco.Banco().selectTable(nomeCompleto, senha, confirmSenha)
 
 def agendar():
     if event == 'agendar': 
@@ -20,7 +20,7 @@ def agendar():
         hora = str(values['hora'])
         data = str(values['data'])
         window.FindElement('_output_').Update('')
-        idUser = banco.Banco().selectTable(3,nomeCompleto, senha, confirmSenha)
+        idUser = banco.Banco().selectTable(nomeCompleto, senha, confirmSenha)
         banco.Banco().insertTable(0,nomeCompleto,senha,confirmSenha,idUser,data,tema,hora)
         
 def todosAgendamento():
@@ -35,7 +35,7 @@ def todosAgendamento():
         for a in range(10000):
             progressBar.UpdateBar(a+1, 10000)
         progressBar.UpdateBar(0, 10000)
-        banco.Banco().selectTable(1,nomeCompleto,senha,confirmSenha)
+        banco.Banco().selectTable(nomeCompleto,senha,confirmSenha)
         
 sg.theme('SystemDefault1')
 temas = ['Brainstorm', 'Briefing', 'Apresentação', 'Encontro recorrente']
@@ -70,9 +70,9 @@ def win_2():
     return sg.Window('Cadastro', layout, finalize=True)
 
 window1, window2 = win_1(), None
-
+banco.Banco().createTable()
 while True:
-    window, event,values = sg.read_all_windows()        
+    window, event,values = sg.read_all_windows()       
     if event == sg.WIN_CLOSED or event == 'Cancelar' or event == 'Exit':
         window.close()
         if window == window2:
@@ -95,12 +95,12 @@ while True:
         senhaNova = str(values['senhaNova'])
         confirmSenhaNova = str(values['confirmSenhaNova'])
         banco.Banco().insertTable(1,nomeNovo,senhaNova,confirmSenhaNova,idUser,'','','')
-        sleep(2)
-        window2 = window2.close()
+        sleep(1)
+        window2 = window.close()
     elif event == 'banco':
         window.FindElement('_output_').Update('')
         nomeCompleto = str(values['NomeCompleto'])
         senha = str(values['senha']) 
         confirmSenha = str(values['senha'])
-        banco.Banco().selectTable(3,nomeCompleto, senha, confirmSenha)
+        banco.Banco().selectTable(nomeCompleto, senha, confirmSenha)
 window.close()
