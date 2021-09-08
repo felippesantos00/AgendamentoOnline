@@ -37,52 +37,75 @@ class Banco():
             "INSERT INTO reunioes (nome, data, tema, hora,idusuario_idusuario) VALUES ('%s', '%s', '%s','%s', %d);"%(nomeCompleto, data,tema,hora,idUser),
             "INSERT INTO idusuario (ididusuario, nome, senha, confirmSenha) VALUES ('%d','%s','%s','%s');"% (idUser, nomeCompleto,senha,confirmSenha)
             ]
-        for query in querys:
-            c = self.conexao.cursor()
-            try:
-                c.execute(query)
-                if event == 1 and senha == confirmSenha:
-                    print("Novo usuario: ",nomeCompleto)
-                    print("Senha: ",senha)
-                    print("Cadastrado com sucesso")     
-                    self.conexao.commit()
-                    c.close()           
-            except:
-                self.conexao.commit()
-                c.close()
-                print("Usuario: %s foi confirmado"% (nomeCompleto))
-                print("Agendamento concluido")
-                print("_______________________________________")
-                print()
-            
+        c = self.conexao.cursor()
+        if event == 'Cadastrar' and senha == confirmSenha:    #adicionar usuario
+            c.execute(querys[1])
+            print("Novo usuario: ",nomeCompleto)
+            print("Senha: ",senha)
+            print("Cadastrado com sucesso")
+            self.conexao.commit()
+            c.close()
+        elif event == 'agendar' and idUser != 'not sucess' and senha == confirmSenha:
+            c.execute(querys[0])
+            print()
+            print("Usuario: %s foi confirmado"% (nomeCompleto))
+            print("Agendamento concluido")
+            print("_______________________________________")
+            print()
+            self.conexao.commit()
+            c.close()
+        else:
+            print("id do usuario não retornou")
 
-    def selectTable(self, nomeCompleto, senha, confirmSenha):
+    def selectTable(self, event, nomeCompleto, senha, confirmSenha):
         querys = [
             ("SELECT * FROM reunioes"),
             ("SELECT * FROM idusuario WHERE nome='%s' and senha='%s' and confirmSenha='%s'" % (nomeCompleto,senha,confirmSenha)),
             ("SELECT * FROM reunioes LEFT JOIN idusuario ON reunioes.nome = idusuario.nome WHERE reunioes.nome = '%s' and idusuario.senha = '%s' and idusuario.confirmSenha = '%s' "% (nomeCompleto,senha,confirmSenha))
             ]
-        for query in querys:
-            c = self.conexao.cursor()
-            c.execute(query)
+        c = self.conexao.cursor()
+        if event == 'meusAgendamentos':
+            c.execute(querys[2])
             linhas = c.fetchall()
             for linha in linhas:
-                try:
-                    print("Nome: ", linha[1])
-                    print("Data:", linha[2])
-                    print("Tema da reunião:", linha[3])
-                    print("Horário da reunião:", linha[4])
-                    print("id usuario: ",linha[5])
-                    print("_______________________________________")
-                    print()
-                    print("executado com sucesso")
-                except:
-                    print("Id: ", linha[0])
-                    print("Nome:", linha[1])
-                    print("Senha:", linha[2])
-                    print("_______________________________________")
-                    print()
-                    print("executado com sucesso")
-                    return linha[0]
-            self.conexao.commit()
-            c.close()
+                print("Nome: ", linha[1])
+                print("Data:", linha[2])
+                print("Tema da reunião:", linha[3])
+                print("Horário da reunião:", linha[4])
+                print("id usuario: ",linha[5])
+                print("_______________________________________")
+                print()
+                print("executado com sucesso")
+        elif event == 'validaUser' or event == 'agendar':
+            c.execute(querys[1])
+            linhas = c.fetchall()
+            if linhas == []:
+                print("Usuario não encontrado, favor verificar senha ou nome completo corretamente")
+            else:    
+                for linha in linhas:
+                    try:
+                        print()
+                        print("Id: ", linha[0])
+                        print("Nome:", linha[1])
+                        print("Senha:", linha[2])
+                        print("_______________________________________")
+                        print()
+                        print("Usuario verificado com sucesso")
+                        print()
+                        return "\nId: %s\nNome: %s\nSenha: %s\nUsuario verificado com sucesso"% (linha[0],linha[1],linha[2])
+                    except:
+                        return 'not sucess'
+        elif event == 'todosAgendamentos':    
+            c.execute(querys[0])
+            linhas = c.fetchall()
+            for linha in linhas:
+                print("Nome: ", linha[1])
+                print("Data:", linha[2])
+                print("Tema da reunião:", linha[3])
+                print("Horário da reunião:", linha[4])
+                print("id usuario: ",linha[5])
+                print("_______________________________________")
+                print()
+                print("executado com sucesso")
+        self.conexao.commit()
+        c.close()
