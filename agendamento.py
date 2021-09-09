@@ -1,6 +1,7 @@
 from time import sleep
 import PySimpleGUI as sg
 import Banco as banco
+import client
 from random import randint
 
 def cadastrar(window2):
@@ -15,6 +16,7 @@ def cadastrar(window2):
 
 def validaUser():    
     if event == 'validaUser':
+        client.send()
         window.FindElement('_output_').Update('')
         nomeCompleto = str(values['NomeCompleto'])
         senha = str(values['senha']) 
